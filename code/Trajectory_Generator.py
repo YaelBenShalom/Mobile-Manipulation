@@ -5,12 +5,12 @@ import csv
 
 
 """
-Code for Milestone 2: Reference Trajectory Generation.
+Code for Milestone 2: Trajectory Generation.
 In this code I wrote a function TrajectoryGenerator to generate the reference trajectory for the
 end-effector frame {e}.
 This trajectory consists of eight concatenated trajectory segments. Each trajectory segment begins
 and ends at rest.
-The trajectory is saved in an srv file 'trajectory.srv'.
+The trajectory is saved in an csv file 'trajectory.csv'.
 """
 
 def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_standoff, k):
@@ -19,19 +19,19 @@ def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_stand
 	Each trajectory segment begins and ends at rest.
 
 	Input:
-	Tse_initial: The initial configuration of the end-effector in the reference trajectory
-	Tsc_initial: The cube's initial configuration
-	Tsc_goal: The cube's desired final configuration
-	Tce_grasp: The end-effector's configuration relative to the cube when it is grasping the cube
-	Tce_standoff: The end-effector's standoff configuration above the cube, before and after
-				  grasping, relative to the cube
-	k: The number of trajectory reference configurations per 0.01 seconds
+	  Tse_initial - The initial configuration of the end-effector in the reference trajectory.
+	  Tsc_initial - The cube's initial configuration.
+	  Tsc_goal - The cube's desired final configuration.
+	  Tce_grasp - The end-effector's configuration relative to the cube when it is grasping the cube.
+	  Tce_standoff - The end-effector's standoff configuration above the cube, before and after
+				  grasping, relative to the cube.
+	  k - The number of trajectory reference configurations per 0.01 seconds.
 
 	Return: 
-	A representation of the N configurations of the end-effector along the entire concatenated
-	eight-segment reference trajectory (including the gripper state).
+	  trajectory_list - A representation of the N configurations of the end-effector along the entire
+	  concatenated eight-segment reference trajectory (including the gripper state).
 
-	trajectory = [r11, r12, r13, r21, r22, r23, r31, r32, r33, px, py, pz, gripper_state]
+	  trajectory = [r11, r12, r13, r21, r22, r23, r31, r32, r33, px, py, pz, gripper_state]
 	"""
 
 	########## Initialization ##########

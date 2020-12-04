@@ -69,34 +69,41 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
 	print('Vd is: ', Vd)
 	# print(Vd.shape)
 	
-	ADxxd = core.Adjoint((core.TransInv(X)).dot(Xd))
-	print('ADxxd is: ', ADxxd)
-	# print(ADxxd.shape)
+	ADx1xd = core.Adjoint((core.TransInv(X)).dot(Xd))
+	ADx1xdVd = ADx1xd.dot(Vd)
+	print('ADx1xdVd is: ', ADx1xdVd)
 
-	ADxxdVd = ADxxd.dot(Vd)
+	# Calculate the error:
 	Xerr = core.se3ToVec(core.MatrixLog6((core.TransInv(X)).dot(Xd)))
 	print('Xerr is: ', Xerr)
 	# print(Xerr.shape)
 
-	V = ADxxdVd + Kp * Xerr + 0
+	# Calculate command end effector twist (when the numerical integral of the error is Xerr * delta_t):
+	V = ADx1xdVd + Kp * Xerr + Ki * Xerr * delta_t
 	print("V is: ", V)
 	# print(V.shape)
 
+	# Calculate the arm, body and end-effector Jacobian matrices:
 	Ja = core.JacobianBody(Blist, arm_joints)
-	Jb = core.Adjoint((core.TransInv(T0e)).dot(core.TransInv(Tb0))).dot(F)
+	print(T0e)
+	print(core.TransInv(Tb0))
+	print(core.TransInv(T0e))
+	print((core.TransInv(T0e)).dot(core.TransInv(Tb0)))
+	Jb = (core.Adjoint((core.TransInv(T0e)).dot(core.TransInv(Tb0)))).dot(F)
 	Je = np.concatenate((Jb,Ja),axis=1)
-	Je_inv = np.linalg.pinv(Je)
 	print('Je is: ', Je)
 	# print(Je.shape)
 
+	# Calculate the wheel and arm joint speeds:
+	Je_inv = np.linalg.pinv(Je)
 	speeds = Je_inv.dot(V)
 	print("speeds is: ", speeds)
 	# print(speeds.shape)
 
+	return V
 
 
-
-########## Testing the NextState function ##########
+########## Testing the FeedbackControl function ##########
 
 # Initialize variables:
 # The current actual end-effector configuration:
@@ -123,17 +130,3 @@ delta_t = 0.01	# Time step [sec]
 
 # Calculate the commanded end-effector twist
 V = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t)
-
-
-
-
-
-# Calculate the new configuration for every iteration:
-for i in range(1, iteration):
-	current_config = NextState(current_config, speeds, delta_t, max_ang_speed)
-	config_list[i][:12] = current_config
-
-# Save the 13-segment of new configurations as a csv file:
-with open("next_state.csv","w+") as my_csv:
-	csvWriter = csv.writer(my_csv, delimiter=',')
-	csvWriter.writerows(config_list)

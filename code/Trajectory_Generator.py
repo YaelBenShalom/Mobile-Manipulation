@@ -148,36 +148,36 @@ def get_list_from_matric(trajectory_list, trajectory, N, gripper_state):
 
 
 # The initial configuration of the end-effector in the reference trajectory:
-Tse_initial = np.array([[ 0, 0, 1, 0],
-						[ 0, 1, 0, 0],
-						[ -1, 0,0, 0.5],
-						[ 0, 0, 0, 1]])
+Tse_initial = np.array([[  0, 0, 1,   0],
+						[  0, 1, 0,   0],
+						[ -1, 0, 0, 0.5],
+						[  0, 0, 0,   1]])
 
 # The cube's initial configuration:
-Tsc_initial = np.array([[1, 0, 0, 1],
-						[0, 1, 0, 0],
+Tsc_initial = np.array([[1, 0, 0,     1],
+						[0, 1, 0,     0],
 						[0, 0, 1, 0.025],
-						[0, 0, 0, 1]])
+						[0, 0, 0,     1]])
 
 # The cube's desired final configuration:
-Tsc_goal = np.array([[ 0, 1, 0, 0],
-					 [-1, 0, 0, -1],
-					 [ 0, 0, 1, 0.025],
-					 [ 0, 0, 0, 1]])
+Tsc_goal = np.array([[  0, 1, 0,     0],
+					 [ -1, 0, 0,    -1],
+					 [  0, 0, 1, 0.025],
+					 [  0, 0, 0,     1]])
 
 # The end-effector's configuration relative to the cube when it is grasping the cube
 # (the two frames located in the same coordinates, rotated about the y axis):
-Tce_grasp = np.array([[ -1/np.sqrt(2), 0, 1/np.sqrt(2), 0],
-					  [ 0, 1, 0, 0],
-					  [-1/np.sqrt(2), 0, -1/np.sqrt(2), 0],
-					  [ 0, 0, 0, 1]])
+Tce_grasp = np.array([[ -1/np.sqrt(2), 0,  1/np.sqrt(2), 0],
+					  [             0, 1,             0, 0],
+					  [ -1/np.sqrt(2), 0, -1/np.sqrt(2), 0],
+					  [             0, 0,             0, 1]])
 
 # The end-effector's standoff configuration above the cube, before and after grasping, relative
 # to the cube (the {e} frame located 0.2m above the {c} frame, rotated about the y axis):
-Tce_standoff = np.array([[ 0, 0, 1, 0],
-						 [ 0, 1, 0, 0],
-						 [-1, 0, 0, 0.2],  
-						 [ 0, 0, 0, 1]])
+Tce_standoff = np.array([[  0, 0, 1,   0],
+						 [  0, 1, 0,   0],
+						 [ -1, 0, 0, 0.2],  
+						 [  0, 0, 0,   1]])
 
 # The number of trajectory reference configurations per 0.01 seconds:
 k = 1

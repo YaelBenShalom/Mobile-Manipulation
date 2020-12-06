@@ -58,9 +58,9 @@ def NextState(current_config, speeds, delta_t, max_ang_speed):
 	new_wheel_ang = current_wheel_ang + u * delta_t
 
 	# Calculate new chasis configuration (according to Chapter 13.4):
-	F = r/4 * np.array([[-1/(l + w), 1/(l + w), 1/(l + w), -1/(l + w)],
-						[ 1,  1,  1,  1],
-						[-1,  1, -1,  1]])
+	F = r/4 * np.array([[ -1/(l + w), 1/(l + w), 1/(l + w), -1/(l + w)],
+						[          1,         1,         1,          1],
+						[         -1,         1,        -1,          1]])
 	Vb = F.dot((u * delta_t).T).T
 	w_bz, v_bx, v_by = Vb
 
@@ -72,7 +72,7 @@ def NextState(current_config, speeds, delta_t, max_ang_speed):
 
 	# Transforming the ∆q b in {b} to ∆q in the fixed frame {s} using the chassis angle:
 	chassis_angle = current_config[0]
-	Tsb = np.array([[1, 0, 0],
+	Tsb = np.array([[1,                  0,					  0],
 					[0, cos(chassis_angle), -sin(chassis_angle)],
 					[0, sin(chassis_angle), cos(chassis_angle)]])
 	delta_q = Tsb.dot(delta_qb.T)

@@ -90,7 +90,7 @@ def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_stand
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_4, N, gripper_state)
 
 	# From standoff position to goal position:
-	N = 700
+	N = N_picking
 	trajectory_5 = np.asarray(core.ScrewTrajectory(Tse_standoff, Tse_goal, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_5, N, gripper_state)
 

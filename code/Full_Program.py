@@ -36,7 +36,8 @@ def main():
 	  A saved csv file represents the N configurations of the end-effector along the entire
 	  concatenated eight-segment reference trajectory, including the gripper state (a 13-vector)
 	  A saved csv file represents the Xerr (a 6-vector)
-	  A log file
+	  A saved plot of the Xerr changing with time
+	  A saved log file
 	"""
 
 	########## Initialization ##########
@@ -46,7 +47,7 @@ def main():
 	# The initial configuration of the robot
 	# (chassis phi, chassis x, chassis y, J1, J2, J3, J4, J5, W1, W2, W3, W4, gripper state)
 	# The end-effector has at least 30 degrees of orientation error and 0.2m of position error:
-	initial_config = np.array([pi/6, -0.5, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+	initial_config = np.array([0.1, -0.2, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
 
 	# The initial configuration of the end-effector in the reference trajectory:
 	Tse_initial = np.array([[  0, 0, 1,   0],
@@ -157,9 +158,7 @@ def main():
 
 		# Calculate the control law:
 		V, controls, Xerr, error_integral = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config, error_integral)
-		wheels_control = controls[:4]
-		joints_control = controls[4:9]
-		controls_flipped = np.concatenate((joints_control, wheels_control), axis=None)
+		controls_flipped = np.concatenate((controls[4:9], controls[:4]), axis=None)
 
 		# Calculate the next configuration:
 		current_config = NextState(current_config[:12], controls_flipped, delta_t, max_ang_speed)

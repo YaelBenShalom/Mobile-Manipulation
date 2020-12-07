@@ -8,26 +8,19 @@ This project is the final project in the course [ME-449 - Robotic Manipulation](
 
 The projects description can be found [here](http://hades.mech.northwestern.edu/index.php/Mobile_Manipulation_Capstone#Milestone_1:_youBot_Kinematics_Simulator_and_csv_Output)
 
-The projects covers the following topics:
-
-1. Generates the kinematics simulator of the youBot - an omnidirectional mobile robot with a 5-DOF robotic arm.
-
-2. Plans the end-effector's trajectory between waypoints.
-
-3. Apply feedback control to drive the robot in the desired trajectory.
-
-4. Simulate the planned trajectory in CoppeliaSim.
+The projects covers the following topics:<br>
+1. Generates the kinematics simulator of the youBot - an omnidirectional mobile robot with a 5-DOF robotic arm.<br>
+2. Plans the end-effector's trajectory between waypoints.<br>
+3. Apply feedback control to drive the robot in the desired trajectory.<br>
+4. Simulate the planned trajectory in CoppeliaSim.<br>
 
 
 ## Package Description
 
-This project contains 3 milestones, and was implemented in the code `Full_Program.py`. The main code calls the 3 milestone sub-code:
-
-1. `Next_State.py` - Milestone 1 code. This code uses a function `NextState()`, that compute the configuration of the robot in the next time step.
-
-2. `Trajectory_Generator.py` - Milestone 2 code. This code uses a function `TrajectoryGenerator()`, that generates the reference trajectory for the end-effector frame {e}.
-
-3. `Feedback_Control.py` - Milestone 3 code. This code uses a function `FeedbackControl()`, that calculates the kinematic task-space feedforward plus feedback control law.
+This project contains 3 milestones, and was implemented in the code `Full_Program.py`. The main code calls the 3 milestone sub-code:<br>
+1. `Next_State.py` - Milestone 1 code. This code uses a function `NextState()`, that compute the configuration of the robot in the next time step.<br>
+2. `Trajectory_Generator.py` - Milestone 2 code. This code uses a function `TrajectoryGenerator()`, that generates the reference trajectory for the end-effector frame {e}.<br>
+3. `Feedback_Control.py` - Milestone 3 code. This code uses a function `FeedbackControl()`, that calculates the kinematic task-space feedforward plus feedback control law.<br>
 
 The code also uses functions from the `Modern Robotics` library. This library can be downloaded from this git repository - `https://github.com/NxRLab/ModernRobotics`.
 
@@ -47,11 +40,9 @@ pip install modern_robotics
 
 The results for this projects can be split into 3 categories:
 
-1. `Best` results - Planning and executing a motion without overshoot or steady-state error.
-
-2. `Overshoot` results - Planning and executing a motion with overshoot but without steady-state error.
-
-3. `NewTast` results - Planning and executing the trajectory with different start and finish configuration.
+1. `Best` results - Planning and executing a motion without overshoot or steady-state error.<br>
+2. `Overshoot` results - Planning and executing a motion with overshoot but without steady-state error.<br>
+3. `NewTast` results - Planning and executing the trajectory with different start and finish configuration.<br>
 
 
 ### Motion planning with different initial and final cube location:
@@ -59,40 +50,46 @@ The results for this projects can be split into 3 categories:
 For this part, I simulated the the controlled motion with different initial and final cube location, and different initial robot's configuration.
 
 1. For this part, I used the following initial and final conditions:
-    Initial robot's configuration:
+
+    Initial robot's configuration:<br>
     initial_config = np.array([0.1, -0.2, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
 
-    Initial cube location:
-    Tsc_initial = [1, 0, 0,     1],
-                  [0, 1, 0,     0],
-                  [0, 0, 1, 0.025],
-                  [0, 0, 0,     1]])
+    Initial cube location:<br>
+    Tsc_initial =<br>
+    [1, 0, 0,     1],<br>
+    [0, 1, 0,     0],<br>
+    [0, 0, 1, 0.025],<br>
+    [0, 0, 0,     1]])
 
-    Final cube location:
-    Tsc_initial = [ 0, 1, 0,     0],
-                  [-1, 0, 0,    -1],
-                  [ 0, 0, 1, 0.025],
-                  [ 0, 0, 0,     1]])
+    Final cube location:<br>
+    Tsc_initial =<br>
+    [ 0, 1, 0,     0],<br>
+    [-1, 0, 0,    -1],<br>
+    [ 0, 0, 1, 0.025],<br>
+    [ 0, 0, 0,     1]])<br>
 
     The simulated controlled motion with the following condition is:
 
     ![best simulation](https://github.com/YaelBenShalom/Mobile-Manipulation/blob/main/results/best/best.gif)
 
 2. For this part, I used the following initial and final conditions:
-    Initial robot's configuration:
+
+    Initial robot's configuration:<br>
     initial_config = np.array([pi/6, -0.5, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
 
-    Initial cube location:
-    Tsc_initial = [1, 0, 0,     1],
-                  [0, 1, 0,     1],
-                  [0, 0, 1, 0.025],
-                  [0, 0, 0,     1]])
+    Initial cube location:<br>
+    Tsc_initial =<br>
+    [1, 0, 0,     1],<br>
+    [0, 1, 0,     1],<br>
+    [0, 0, 1, 0.025],<br>
+    [0, 0, 0,     1]])
 
-    Final cube location:
-    Tsc_initial = [ 0, 1, 0,     1],
-                  [-1, 0, 0,    -1],
-                  [ 0, 0, 1, 0.025],
-                  [ 0, 0, 0,     1]])
+    Final cube location:<br>
+    Tsc_initial =<br>
+    [ 0, 1, 0,     1],<br>
+    [-1, 0, 0,    -1],<br>
+    [ 0, 0, 1, 0.025],<br>
+    [ 0, 0, 0,     1]])<br>
 
     The simulated controlled motion with the following condition is:
 

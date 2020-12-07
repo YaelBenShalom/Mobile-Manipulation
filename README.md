@@ -6,7 +6,7 @@ GitHub repository - `https://github.com/YaelBenShalom/Mobile-Manipulation`
 
 This project is the final project in the course [ME-449 - Robotic Manipulation](http://hades.mech.northwestern.edu/index.php/ME_449_Robotic_Manipulation). In this project I wrote a software that plans a trajectory for the end-effector of the youBot mobile manipulator, performs odometry as the chassis moves, and performs feedback control to drive the youBot to pick up a block at a specified location, carry it to a desired location, and put it down in the V-REP simulation softwarw. 
 
-The projects description can be found [here](http://hades.mech.northwestern.edu/index.php/Mobile_Manipulation_Capstone#Milestone_1:_youBot_Kinematics_Simulator_and_csv_Output)
+The projects description can be found [here](http://hades.mech.northwestern.edu/index.php/Mobile_Manipulation_Capstone#Milestone_1:_youBot_Kinematics_Simulator_and_csv_Output).
 
 The projects covers the following topics:<br>
 1. Generates the kinematics simulator of the youBot - an omnidirectional mobile robot with a 5-DOF robotic arm.<br>

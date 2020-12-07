@@ -4,6 +4,7 @@ from numpy import cos, sin
 from math import pi
 import logging
 import csv
+import matplotlib.pyplot as plt
 
 from Trajectory_Generator import TrajectoryGenerator, get_list_from_matric
 from Next_State import NextState
@@ -20,8 +21,8 @@ The code returnes the configuration in any given moment as a csv file that can b
 """
 
 # Initilize log file
-LOG_FILENAME = 'newtask.log'
-logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
+LOG_FILENAME = 'best.log'
+logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
 
 def main():
 	""" The project's main function.
@@ -45,7 +46,7 @@ def main():
 	# The initial configuration of the robot
 	# (chassis phi, chassis x, chassis y, J1, J2, J3, J4, J5, W1, W2, W3, W4, gripper state)
 	# The end-effector has at least 30 degrees of orientation error and 0.2m of position error:
-	initial_config = np.array([0.1, 0.1, 0.2, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+	initial_config = np.array([pi/6, -0.5, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
 
 	# The initial configuration of the end-effector in the reference trajectory:
 	Tse_initial = np.array([[  0, 0, 1,   0],
@@ -60,7 +61,7 @@ def main():
 							[0, 0, 0,     1]])
 
 	# The cube's desired final configuration:
-	Tsc_goal = np.array([[  0, 1, 0,     0],
+	Tsc_goal = np.array([[  0, 1, 0,  	 0],
 						 [ -1, 0, 0,    -1],
 						 [  0, 0, 1, 0.025],
 						 [  0, 0, 0,     1]])
@@ -73,11 +74,11 @@ def main():
 						  [             0, 0,             0, 1]])
 
 	# The end-effector's standoff configuration above the cube, before and after grasping, relative
-	# to the cube (the {e} frame located 0.2m above the {c} frame, rotated about the y axis):
-	Tce_standoff = np.array([[  0, 0, 1,   0],
-							 [  0, 1, 0,   0],
-							 [ -1, 0, 0, 0.2],  
-						  	 [  0, 0, 0,   1]])
+	# to the cube (the {e} frame located 0.1m above the {c} frame, rotated about the y axis):
+	Tce_standoff = np.array([[ -1/np.sqrt(2), 0,  1/np.sqrt(2),   0],
+						  	 [             0, 1,             0,   0],
+						  	 [ -1/np.sqrt(2), 0, -1/np.sqrt(2), 0.1],
+						  	 [             0, 0,             0,   1]])
 
 	# The fixed offset from the chassis frame {b} to the base frame of the arm {0}:
 	Tb0 = np.array([[ 1, 0, 0, 0.1662],
@@ -99,23 +100,24 @@ def main():
                       [0,  0, 1,       0,      0, 0]]).T
 
 	# Initialization of feedback control constants:
-	kp_gain = 30					  # The kp gain
-	ki_gain = 15					  # The ki gain
-	Kp = np.identity(6)	* kp_gain		  # The P gain matrix
-	Ki = np.identity(6)	* ki_gain		  # The I gain matrix
+	kp_gain = 20						# The kp gain
+	ki_gain = 5					    	# The ki gain
+	Kp = np.identity(6)	* kp_gain	    # The P gain matrix
+	Ki = np.identity(6)	* ki_gain		# The I gain matrix
 
 	# Restrictions on the speeds vector:
-	max_ang_speed = 5
+	max_ang_speed = 10
 
 	# Initialization of simulation constants:
 	k = 1								# The number of trajectory reference configurations per 0.01 seconds
 	delta_t = 0.01						# Time step [sec]
-	t_total = 14						# Simulation run time [sec]
+	t_total = 16						# Simulation run time [sec]
 	iteration = int(t_total/delta_t)	# Number of iterations
 
 	# Initialization of variable lists:
 	config_array = np.zeros((iteration, 13))
 	Xerr_array = np.zeros((iteration, 6))
+	error_integral = np.zeros(6)
 
 	# Add the initial configuration to the config_array:
 	config_array[0] = initial_config
@@ -124,6 +126,7 @@ def main():
 	########## Calculating Configurations ##########
 
 	# Trajectory Generation:
+	logging.info('Generating trajectory')
 	trajectory = TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_standoff, k)
 	for i in range(1, iteration-1):
 		current_config = config_array[i-1,:]
@@ -153,7 +156,7 @@ def main():
 		print("Xd_next: ", Xd_next)
 
 		# Calculate the control law:
-		V, controls, Xerr = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config)
+		V, controls, Xerr, error_integral = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config, error_integral)
 		wheels_control = controls[:4]
 		joints_control = controls[4:9]
 		controls_flipped = np.concatenate((joints_control, wheels_control), axis=None)
@@ -165,16 +168,40 @@ def main():
 		# Calculate the error:
 		Xerr_array[i-1] = Xerr
 
-
+	
 	# Save the configurations as a csv file:
+	logging.info('Generating trajectory csv file')
 	with open("configurations.csv","w+") as my_csv1:
 		csvWriter = csv.writer(my_csv1, delimiter=',')
 		csvWriter.writerows(config_array)
 
 	# Save the error as a csv file:
+	logging.info('Generating error csv file')
 	with open("Xerr.csv","w+") as my_csv2:
 		csvWriter = csv.writer(my_csv2, delimiter=',')
 		csvWriter.writerows(Xerr_array)
+
+	# Plot the error as function of time:
+	logging.info('plotting error data')
+	t_traj = np.linspace(1, 16, 1600)
+	print("Xerr_array: ", Xerr_array)
+	print("Xerr_array.shape: ", Xerr_array.shape)
+	plt.figure()
+	plt.plot(t_traj, Xerr_array[:,0], label='Xerr[0]')
+	plt.plot(t_traj, Xerr_array[:,1], label='Xerr[1]')
+	plt.plot(t_traj, Xerr_array[:,2], label='Xerr[2]')
+	plt.plot(t_traj, Xerr_array[:,3], label='Xerr[3]')
+	plt.plot(t_traj, Xerr_array[:,4], label='Xerr[4]')
+	plt.plot(t_traj, Xerr_array[:,5], label='Xerr[5]')
+	plt.title(f'Xerr, kp={kp_gain}, ki={ki_gain}')
+	plt.xlabel('Time (s)')
+	plt.xlim([1, 16])
+	plt.ylabel('Error')
+	plt.legend(loc="best")
+	plt.grid()
+	plt.savefig(f'Xerr,kp={kp_gain},ki={ki_gain}.png')
+	plt.show()
+
 
 if __name__ == '__main__':
 	main()

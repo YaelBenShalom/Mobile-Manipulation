@@ -10,7 +10,7 @@ Code for Milestone 3: Feedback Control.
 In this code I wrote a function FeedbackControl to calculate the kinematic task-space feedforward plus feedback control law.
 """
 
-def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config):
+def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config, error_integral):
 	""" This function calculates the kinematic task-space feedforward plus feedback control law
 	(written both as Equation (11.16) and (13.37) in the textbook).
 
@@ -27,6 +27,7 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config):
 	  V - The commanded end-effector twist, expressed in the end-effector frame {e}.
 	  controls - The commanded wheel and arm joint controls.
 	  Xerr - The error.
+	  error_integral - The error integral.
 
 	"""
 
@@ -84,8 +85,9 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config):
 	Xerr = core.se3ToVec(core.MatrixLog6((core.TransInv(X)).dot(Xd)))
 	print("Xerr: ", Xerr)
 
-	# Calculate command end effector twist (when the numerical integral of the error is Xerr * delta_t):
-	V = ADx1xdVd + Kp.dot(Xerr) + Ki.dot(Xerr * delta_t)
+	# Calculate command end effector twist (when the numerical integral of the error is error_integral + Xerr * delta_t):
+	error_integral += Xerr * delta_t
+	V = ADx1xdVd + Kp.dot(Xerr) + Ki.dot(error_integral)
 	print("V: ", V)
 
 	# Calculate the arm, body and end-effector Jacobian matrices:
@@ -99,7 +101,7 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config):
 	controls = Je_inv.dot(V)
 	print("controls: ", controls)
 
-	return V, controls, Xerr
+	return V, controls, Xerr, error_integral
 
 
 ########## Testing the FeedbackControl Function ##########
@@ -126,11 +128,13 @@ Xd_next = np.array([[ 0, 0, 1, 0.6],
 					[-1, 0, 1, 0.3],
 					[ 0, 0, 0,   1]])
 
-kp_gain = 1						  # The kp gain
-ki_gain = 0						  # The ki gain
-Kp = np.identity(6)	* kp_gain		  # The P gain matrix
-Ki = np.identity(6)	* ki_gain		  # The I gain matrix
-delta_t = 0.01	  # Time step [sec]
+error_integral = np.zeros(6)
+
+kp_gain = 1						# The kp gain
+ki_gain = 0						# The ki gain
+Kp = np.identity(6)	* kp_gain	# The P gain matrix
+Ki = np.identity(6)	* ki_gain	# The I gain matrix
+delta_t = 0.01	  			    # Time step [sec]
 
 # Calculate the commanded end-effector twist
-V, speeds, Xerr = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config)
+V, speeds, Xerr, error_integral = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config, error_integral)

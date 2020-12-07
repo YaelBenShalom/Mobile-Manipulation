@@ -48,8 +48,7 @@ def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_stand
 	method = 5
 
 	# The number of points (Start and stop) in the discrete representation of the trajectory:
-	N_driving1 = 300
-	N_driving2 = 500
+	N_driving = 500
 	N_picking = 100
 
 	# The initial configuration of the end-effector above the cube, before and after grasping,
@@ -70,7 +69,7 @@ def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_stand
 	########## Generating Trajectory ##########
 
 	# From initial position to standoff position:
-	N = N_driving1
+	N = N_driving
 	trajectory_1 = np.asarray(core.ScrewTrajectory(Tse_initial, Tse_standoff, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_1, N, gripper_state)
 
@@ -82,33 +81,33 @@ def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_stand
 	# Close the gripper:
 	N = N_picking
 	gripper_state = 1
-	trajectory_3 = np.asarray(core.CartesianTrajectory(Tse_grasp, Tse_grasp, T_tot, N, method))
+	trajectory_3 = np.asarray(core.ScrewTrajectory(Tse_grasp, Tse_grasp, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_3, N, gripper_state)
 
 	# From grasp position to standoff position:
 	N = N_picking
-	trajectory_4 = np.asarray(core.CartesianTrajectory(Tse_grasp, Tse_standoff, T_tot, N, method))
+	trajectory_4 = np.asarray(core.ScrewTrajectory(Tse_grasp, Tse_standoff, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_4, N, gripper_state)
 
 	# From standoff position to goal position:
-	N = N_driving2
-	trajectory_5 = np.asarray(core.CartesianTrajectory(Tse_standoff, Tse_goal, T_tot, N, method))
+	N = 700
+	trajectory_5 = np.asarray(core.ScrewTrajectory(Tse_standoff, Tse_goal, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_5, N, gripper_state)
 
 	# From goal position to final position:
 	N = N_picking
-	trajectory_6 = np.asarray(core.CartesianTrajectory(Tse_goal, Tse_final, T_tot, N, method))
+	trajectory_6 = np.asarray(core.ScrewTrajectory(Tse_goal, Tse_final, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_6, N, gripper_state)
 
 	# open the gripper:
 	N = N_picking
 	gripper_state = 0
-	trajectory_7 = np.asarray(core.CartesianTrajectory(Tse_final, Tse_final, T_tot, N, method))
+	trajectory_7 = np.asarray(core.ScrewTrajectory(Tse_final, Tse_final, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_7, N, gripper_state)
 
 	# From final position to standoff position:
 	N = N_picking
-	trajectory_8 = np.asarray(core.CartesianTrajectory(Tse_final, Tse_goal, T_tot, N, method))
+	trajectory_8 = np.asarray(core.ScrewTrajectory(Tse_final, Tse_goal, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_8, N, gripper_state)
 
 	return trajectory_list
@@ -173,11 +172,11 @@ Tce_grasp = np.array([[ -1/np.sqrt(2), 0,  1/np.sqrt(2), 0],
 					  [             0, 0,             0, 1]])
 
 # The end-effector's standoff configuration above the cube, before and after grasping, relative
-# to the cube (the {e} frame located 0.2m above the {c} frame, rotated about the y axis):
-Tce_standoff = np.array([[  0, 0, 1,   0],
-						 [  0, 1, 0,   0],
-						 [ -1, 0, 0, 0.2],  
-						 [  0, 0, 0,   1]])
+# to the cube (the {e} frame located 0.1m above the {c} frame, rotated about the y axis):
+Tce_standoff = np.array([[ -1/np.sqrt(2), 0,  1/np.sqrt(2),   0],
+						 [             0, 1,             0,   0],
+						 [ -1/np.sqrt(2), 0, -1/np.sqrt(2), 0.1],
+						 [             0, 0,             0,   1]])
 
 # The number of trajectory reference configurations per 0.01 seconds:
 k = 1

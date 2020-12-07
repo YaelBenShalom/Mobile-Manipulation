@@ -74,7 +74,7 @@ def NextState(current_config, speeds, delta_t, max_ang_speed):
 	chassis_angle = current_config[0]
 	Tsb = np.array([[1,                  0,					  0],
 					[0, cos(chassis_angle), -sin(chassis_angle)],
-					[0, sin(chassis_angle), cos(chassis_angle)]])
+					[0, sin(chassis_angle),  cos(chassis_angle)]])
 	delta_q = Tsb.dot(delta_qb.T)
 
 	# Calculating new chasis configuration:
@@ -86,7 +86,7 @@ def NextState(current_config, speeds, delta_t, max_ang_speed):
 	return new_config
 
 
-########## Testing the NextState function ##########
+########## Testing the NextState Function ##########
 
 # Initialize variables:
 # The initial configuration of the youBot(3 chassis configuration variables, 5 arm joint angles, 4 wheel angles, and "0" for "gripper open"):
@@ -103,16 +103,16 @@ delta_t = 0.01						# Time step [sec]
 t_total = 1							# Simulation run time [sec]
 iteration = int(t_total/delta_t)	# Number of iterations
 
-# Initialize configuration list (with current_config as the first raw):
-config_list = np.zeros((iteration, 13))
-config_list[0] = current_config
+# Initialize configuration array (with current_config as the first raw):
+config_array = np.zeros((iteration, 13))
+config_array[0] = current_config
 
 # Calculate the new configuration for every iteration:
 for i in range(1, iteration):
 	current_config = NextState(current_config, speeds, delta_t, max_ang_speed)
-	config_list[i][:12] = current_config
+	config_array[i][:12] = current_config
 
 # Save the 13-segment of new configurations as a csv file:
 with open("next_state.csv","w+") as my_csv:
 	csvWriter = csv.writer(my_csv, delimiter=',')
-	csvWriter.writerows(config_list)
+	csvWriter.writerows(config_array)

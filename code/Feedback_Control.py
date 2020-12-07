@@ -8,7 +8,6 @@ import csv
 """
 Code for Milestone 3: Feedback Control.
 In this code I wrote a function FeedbackControl to calculate the kinematic task-space feedforward plus feedback control law.
-The feedback control is saved in an csv file 'feedback_control.csv'.
 """
 
 def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
@@ -25,7 +24,11 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
 
 	Return: 
 	  V - The commanded end-effector twist, expressed in the end-effector frame {e}.
+	  controls - The commanded wheel and arm joint controls.
+	  Xerr - The error.
+
 	"""
+
 	# Initialize variables:
 	l = 0.47/2			# The forward-backward distance between the wheels to frame {b} [m]
 	w = 0.3/2			# The side-to-side distance between the wheels to frame {b} [m]
@@ -93,15 +96,15 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
 	Je = np.concatenate((Jb, Ja), axis=1)
 	print('Je is: ', Je)
 
-	# Calculate the wheel and arm joint speeds:
+	# Calculate the wheel and arm joint controls:
 	Je_inv = np.linalg.pinv(Je)
-	speeds = Je_inv.dot(V)
-	print("speeds is: ", speeds)
+	controls = Je_inv.dot(V)
+	print("controls is: ", controls)
 
-	return V
+	return V, controls, Xerr
 
 
-########## Testing the FeedbackControl function ##########
+########## Testing the FeedbackControl Function ##########
 
 # Initialize variables:
 # The current actual end-effector configuration:
@@ -122,9 +125,9 @@ Xd_next = np.array([[ 0, 0, 1, 0.6],
 					[-1, 0, 1, 0.3],
 					[ 0, 0, 0,   1]])
 
-Kp = 0			# The P gain matrix
-Ki = 0			# The I gain matrix
-delta_t = 0.01	# Time step [sec]
+Kp = 1			  # The P gain matrix
+Ki = 0			  # The I gain matrix
+delta_t = 0.01	  # Time step [sec]
 
 # Calculate the commanded end-effector twist
-V = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t)
+V, speeds, Xerr = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t)

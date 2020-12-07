@@ -66,7 +66,7 @@ def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_stand
 	Tse_final = np.dot(Tsc_goal, Tce_grasp)
 
 
-	########## Generating trajectory ##########
+	########## Generating Trajectory ##########
 
 	# From initial position to standoff position:
 	N = N_driving
@@ -118,14 +118,14 @@ def get_list_from_matric(trajectory_list, trajectory, N, gripper_state):
 	existing trajectory list.
 
 	Input:
-	trajectory_list: A representation of the N configurations of the end-effector along the entire
-	concatenated eight-segment reference trajectory (including the gripper state).
-	trajectory: The trajectory on the segment
-	N: The number of points (Start and stop) in the discrete representation of the trajectory:
-	gripper_state: The state of the gripper (0 = open, 1 = close)
+	  trajectory_list: A representation of the N configurations of the end-effector along the entire
+	  concatenated eight-segment reference trajectory (including the gripper state).
+	  trajectory: The trajectory on the segment
+	  N: The number of points (Start and stop) in the discrete representation of the trajectory:
+	  gripper_state: The state of the gripper (0 = open, 1 = close)
 
 	Return: 
-	trajectory_list
+	  trajectory_list
 	"""
 
 	for i in range(N):
@@ -144,7 +144,6 @@ def get_list_from_matric(trajectory_list, trajectory, N, gripper_state):
 
 		trajectory_list.append([r11, r12, r13, r21, r22, r23, r31, r32, r33, px, py, pz, gripper_state])
 	return trajectory_list
-
 
 
 # The initial configuration of the end-effector in the reference trajectory:
@@ -184,9 +183,8 @@ k = 1
 
 # Call the function to get the trajectory:
 trajectory = TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_standoff, k)
-# print(trajectory)
 
 # Save the eight-segment reference trajectory as a csv file:
-with open("csv/trajectory.csv","w+") as my_csv:
+with open("trajectory.csv","w+") as my_csv:
 	csvWriter = csv.writer(my_csv, delimiter=',')
 	csvWriter.writerows(trajectory)

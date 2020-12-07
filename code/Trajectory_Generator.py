@@ -14,7 +14,7 @@ The trajectory is saved in an csv file 'trajectory.csv'.
 """
 
 def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_standoff, k):
-	""" This function Generates the reference trajectory for the end-effector frame {e}.
+	""" This function generates the reference trajectory for the end-effector frame {e}.
 	This trajectory consists of eight concatenated trajectory segments, as described above.
 	Each trajectory segment begins and ends at rest.
 

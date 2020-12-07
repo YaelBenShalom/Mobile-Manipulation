@@ -98,32 +98,11 @@ def main():
                       [0, -1, 0, -0.2176,      0, 0],
                       [0,  0, 1,       0,      0, 0]]).T
 
-
-	# # Initialize variables:
-	# # The current actual end-effector configuration:
-	# X = np.array([[ 0.170, 0, 0.985, 0.387],
-	# 			 [     0, 1,     0,     0],
-	# 			 [-0.985, 0, 0.170, 0.570],
-	# 			 [     0, 0,     0,     1]])
-
-	# # The current end-effector reference configuration:
-	# Xd = np.array([[  0, 0, 1, 0.5],
-	# 			   [  0, 1, 0,   0],
-	# 			   [ -1, 0, 0, 0.5],
-	# 			   [  0, 0, 0,   1]])
-
-	# # The end-effector reference configuration at the next timestep in the reference trajectory:
-	# Xd_next = np.array([[ 0, 0, 1, 0.6],
-	# 					[ 0, 1, 0,   0],
-	# 					[-1, 0, 1, 0.3],
-	# 					[ 0, 0, 0,   1]])
-
-
 	# Initialization of feedback control constants:
-	kp_gain = 0						  # The kp gain 30
-	ki_gain = 0						  # The ki gain 15
-	Kp = np.identity(4)	* kp_gain		  # The P gain matrix
-	Ki = np.identity(4)	* ki_gain		  # The I gain matrix
+	kp_gain = 30					  # The kp gain
+	ki_gain = 15					  # The ki gain
+	Kp = np.identity(6)	* kp_gain		  # The P gain matrix
+	Ki = np.identity(6)	* ki_gain		  # The I gain matrix
 
 	# Restrictions on the speeds vector:
 	max_ang_speed = 5
@@ -131,7 +110,7 @@ def main():
 	# Initialization of simulation constants:
 	k = 1								# The number of trajectory reference configurations per 0.01 seconds
 	delta_t = 0.01						# Time step [sec]
-	t_total = 15							# Simulation run time [sec]
+	t_total = 14						# Simulation run time [sec]
 	iteration = int(t_total/delta_t)	# Number of iterations
 
 	# Initialization of variable lists:
@@ -146,27 +125,38 @@ def main():
 
 	# Trajectory Generation:
 	trajectory = TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_standoff, k)
-
-	for i in range(1, iteration):
+	for i in range(1, iteration-1):
 		current_config = config_array[i-1,:]
 
 		# Define transformation matrices to hepl find the current, desired and next desired position:
-		Tsb = np.array([[1,                      0,					      0],
-						[0, cos(current_config[0]), -sin(current_config[0])],
-						[0, sin(current_config[0]),  cos(current_config[0])]])
+		Tsb = np.array([[cos(current_config[0]), -sin(current_config[0]), 0, current_config[1]],
+						[sin(current_config[0]),  cos(current_config[0]), 0, current_config[2]],
+						[                     0,                       0, 1,            0.0963],
+						[                     0,                       0, 0,                 1]])
 		T0e = core.FKinBody(M0e, Blist, current_config[3:8])
 		Tbe = Tb0.dot(T0e)
 
 		# Define current, desired and next desired position:
 		X = Tsb.dot(Tbe)
-		Xd = trajectory[i,:,:]
-		Xd_next = trajectory[i + 1,:,:]
+		print("X: ", X)
+
+		Xd = np.array([[trajectory[i][0], trajectory[i][1], trajectory[i][2],  trajectory[i][9]],
+				   	   [trajectory[i][3], trajectory[i][4], trajectory[i][5], trajectory[i][10]], 
+				       [trajectory[i][6], trajectory[i][7], trajectory[i][8], trajectory[i][11]],
+				       [               0,                0,                0,                1]])
+		print("Xd: ", Xd)
+		
+		Xd_next = np.array([[trajectory[i+1][0], trajectory[i+1][1], trajectory[i+1][2],  trajectory[i+1][9]],
+				   	   		[trajectory[i+1][3], trajectory[i+1][4], trajectory[i+1][5], trajectory[i+1][10]],
+				      	    [trajectory[i+1][6], trajectory[i+1][7], trajectory[i+1][8], trajectory[i+1][11]],
+							[                 0,                  0,                  0,                  1]])
+		print("Xd_next: ", Xd_next)
 
 		# Calculate the control law:
-		V, controls, Xerr = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t)
+		V, controls, Xerr = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config)
 		wheels_control = controls[:4]
 		joints_control = controls[4:9]
-		controls_flipped = np.concatenate((wheels_control, joints_control), axis=None)
+		controls_flipped = np.concatenate((joints_control, wheels_control), axis=None)
 
 		# Calculate the next configuration:
 		current_config = NextState(current_config[:12], controls_flipped, delta_t, max_ang_speed)

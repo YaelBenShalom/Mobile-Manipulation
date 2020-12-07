@@ -10,7 +10,7 @@ Code for Milestone 3: Feedback Control.
 In this code I wrote a function FeedbackControl to calculate the kinematic task-space feedforward plus feedback control law.
 """
 
-def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
+def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config):
 	""" This function calculates the kinematic task-space feedforward plus feedback control law
 	(written both as Equation (11.16) and (13.37) in the textbook).
 
@@ -21,6 +21,7 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
 	  Kp - the P gain matrix.
 	  Ki - the I gain matrix.
 	  delta_t - The time step Δt between reference trajectory configurations.
+	  current_config - The current cunfiguration.
 
 	Return: 
 	  V - The commanded end-effector twist, expressed in the end-effector frame {e}.
@@ -33,9 +34,6 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
 	l = 0.47/2			# The forward-backward distance between the wheels to frame {b} [m]
 	w = 0.3/2			# The side-to-side distance between the wheels to frame {b} [m]
 	r = 0.0475			# The radius of each wheel [m]
-
-	# The current configuration:
-	current_config = np.array([0, 0, 0, 0, 0, 0.2, -1.6, 0])
 
 	# The fixed offset from the chassis frame {b} to the base frame of the arm {0}:
 	Tb0 = np.array([[ 1, 0, 0, 0.1662],
@@ -57,7 +55,7 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
                       [0,  0, 1,       0,      0, 0]]).T
 	
 	# Get current arm joint angles:
-	arm_joints = current_config[3:]
+	arm_joints = current_config[3:8]
 
 	# Calculate the chasis configuration (according to Chapter 13.4):
 	F = r/4 * np.array([[         0,         0,         0,          0],
@@ -75,31 +73,31 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
 
 	# Calculate the feedforward reference twist:
 	Vd = core.se3ToVec(core.MatrixLog6((core.TransInv(Xd)).dot(Xd_next))/delta_t)
-	print('Vd is: ', Vd)
+	print("Vd: ", Vd)
 	
 	# Calculate the Adx-1xd matrix:
 	ADx1xd = core.Adjoint((core.TransInv(X)).dot(Xd))
 	ADx1xdVd = ADx1xd.dot(Vd)
-	print('ADx1xdVd is: ', ADx1xdVd)
+	print("ADx1xdVd: ", ADx1xdVd)
 
 	# Calculate the error:
 	Xerr = core.se3ToVec(core.MatrixLog6((core.TransInv(X)).dot(Xd)))
-	print('Xerr is: ', Xerr)
+	print("Xerr: ", Xerr)
 
 	# Calculate command end effector twist (when the numerical integral of the error is Xerr * delta_t):
-	V = ADx1xdVd + Kp * Xerr + Ki * Xerr * delta_t
-	print("V is: ", V)
+	V = ADx1xdVd + Kp.dot(Xerr) + Ki.dot(Xerr * delta_t)
+	print("V: ", V)
 
 	# Calculate the arm, body and end-effector Jacobian matrices:
 	Ja = core.JacobianBody(Blist, arm_joints)
 	Jb = (core.Adjoint(Teb)).dot(F)
 	Je = np.concatenate((Jb, Ja), axis=1)
-	print('Je is: ', Je)
+	print("Je: ", Je)
 
 	# Calculate the wheel and arm joint controls:
 	Je_inv = np.linalg.pinv(Je)
 	controls = Je_inv.dot(V)
-	print("controls is: ", controls)
+	print("controls: ", controls)
 
 	return V, controls, Xerr
 
@@ -107,6 +105,9 @@ def FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t):
 ########## Testing the FeedbackControl Function ##########
 
 # Initialize variables:
+# The current configuration:
+current_config = np.array([0, 0, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+
 # The current actual end-effector configuration:
 X = np.array([[ 0.170, 0, 0.985, 0.387],
 			  [     0, 1,     0,     0],
@@ -125,9 +126,11 @@ Xd_next = np.array([[ 0, 0, 1, 0.6],
 					[-1, 0, 1, 0.3],
 					[ 0, 0, 0,   1]])
 
-Kp = 1			  # The P gain matrix
-Ki = 0			  # The I gain matrix
+kp_gain = 1						  # The kp gain
+ki_gain = 0						  # The ki gain
+Kp = np.identity(6)	* kp_gain		  # The P gain matrix
+Ki = np.identity(6)	* ki_gain		  # The I gain matrix
 delta_t = 0.01	  # Time step [sec]
 
 # Calculate the commanded end-effector twist
-V, speeds, Xerr = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t)
+V, speeds, Xerr = FeedbackControl(X, Xd, Xd_next, Kp, Ki, delta_t, current_config)

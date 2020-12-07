@@ -54,7 +54,11 @@ def NextState(current_config, speeds, delta_t, max_ang_speed):
 	u = speeds[5:]
 
 	# Calculate new arm joint angles and wheel angles (according to equtions 1,2):
+	print("current_joint_ang: ", current_joint_ang)
+	print("theta_dot * delta_t: ", theta_dot * delta_t)
 	new_joint_ang = current_joint_ang + theta_dot * delta_t
+	print("current_wheel_ang: ", current_wheel_ang)
+	print("u * delta_t: ", u * delta_t)
 	new_wheel_ang = current_wheel_ang + u * delta_t
 
 	# Calculate new chasis configuration (according to Chapter 13.4):

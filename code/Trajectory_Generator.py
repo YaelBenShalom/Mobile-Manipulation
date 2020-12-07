@@ -48,7 +48,8 @@ def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_stand
 	method = 5
 
 	# The number of points (Start and stop) in the discrete representation of the trajectory:
-	N_driving = 300
+	N_driving1 = 300
+	N_driving2 = 500
 	N_picking = 100
 
 	# The initial configuration of the end-effector above the cube, before and after grasping,
@@ -69,7 +70,7 @@ def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_stand
 	########## Generating Trajectory ##########
 
 	# From initial position to standoff position:
-	N = N_driving
+	N = N_driving1
 	trajectory_1 = np.asarray(core.ScrewTrajectory(Tse_initial, Tse_standoff, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_1, N, gripper_state)
 
@@ -90,7 +91,7 @@ def TrajectoryGenerator(Tse_initial, Tsc_initial, Tsc_goal, Tce_grasp, Tce_stand
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_4, N, gripper_state)
 
 	# From standoff position to goal position:
-	N = N_driving
+	N = N_driving2
 	trajectory_5 = np.asarray(core.CartesianTrajectory(Tse_standoff, Tse_goal, T_tot, N, method))
 	trajectory_list = get_list_from_matric(trajectory_list, trajectory_5, N, gripper_state)
 

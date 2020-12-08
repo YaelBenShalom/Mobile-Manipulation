@@ -31,7 +31,6 @@ The code also uses functions from the `Modern Robotics` library. This library ca
 ```
 pip install modern_robotics
 ``` 
-
 2. Run the `Full_Program.py` code.
 
 
@@ -58,14 +57,14 @@ For this part, I simulated the the controlled motion with different initial and 
             [1, 0, 0,     1],<br>
             [0, 1, 0,     0],<br>
             [0, 0, 1, 0.025],<br>
-            [0, 0, 0,     1]])
+            [0, 0, 0,     1]
 
     Final cube location:<br>
     Tsc_initial =<br>
             [ 0, 1, 0,     0],<br>
             [-1, 0, 0,    -1],<br>
             [ 0, 0, 1, 0.025],<br>
-            [ 0, 0, 0,     1]])<br>
+            [ 0, 0, 0,     1]<br>
 
     The simulated controlled motion with the following condition is:
 
@@ -81,14 +80,14 @@ For this part, I simulated the the controlled motion with different initial and 
             [1, 0, 0,     1],<br>
             [0, 1, 0,     1],<br>
             [0, 0, 1, 0.025],<br>
-            [0, 0, 0,     1]])
+            [0, 0, 0,     1]
 
     Final cube location:<br>
     Tsc_initial =<br>
             [ 0, 1, 0,     1],<br>
             [-1, 0, 0,    -1],<br>
             [ 0, 0, 1, 0.025],<br>
-            [ 0, 0, 0,     1]])<br>
+            [ 0, 0, 0,     1]<br>
 
     The simulated controlled motion with the following condition is:
 

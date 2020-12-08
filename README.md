@@ -4,8 +4,7 @@ GitHub repository - `https://github.com/YaelBenShalom/Mobile-Manipulation`
 
 ## Overview
 
-This project is the final project in the course [ME-449 - Robotic Manipulation](http://hades.mech.northwestern.edu/index.php/ME_449_Robotic_Manipulation). In this project I wrote a software that plans a trajectory for the end-effector of the youBot mobile manipulator, performs odometry as the chassis moves, and performs feedback control to drive the youBot to pick up a block at a specified location, carry it to a desired location, and put it down in the V-REP simulation softwarw. 
-
+This project is the final project in the course [ME-449 - Robotic Manipulation](http://hades.mech.northwestern.edu/index.php/ME_449_Robotic_Manipulation). In this project I wrote a software that plans a trajectory for the end-effector of the youBot mobile manipulator, performs odometry as the chassis moves, and performs feedback control to drive the youBot to pick up a block at a specified location, carry it to a desired location, and put it down in the V-REP simulation softwarw.<br>
 The projects description can be found [here](http://hades.mech.northwestern.edu/index.php/Mobile_Manipulation_Capstone#Milestone_1:_youBot_Kinematics_Simulator_and_csv_Output).
 
 The projects covers the following topics:<br>
@@ -52,21 +51,21 @@ For this part, I simulated the the controlled motion with different initial and 
 1. For this part, I used the following initial and final conditions:
 
     Initial robot's configuration:<br>
-    initial_config = np.array([0.1, -0.2, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+    initial_config = (0.1, -0.2, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0)
 
     Initial cube location:<br>
     Tsc_initial =<br>
-    [1, 0, 0,     1],<br>
-    [0, 1, 0,     0],<br>
-    [0, 0, 1, 0.025],<br>
-    [0, 0, 0,     1]])
+            [1, 0, 0,     1],<br>
+            [0, 1, 0,     0],<br>
+            [0, 0, 1, 0.025],<br>
+            [0, 0, 0,     1]])
 
     Final cube location:<br>
     Tsc_initial =<br>
-    [ 0, 1, 0,     0],<br>
-    [-1, 0, 0,    -1],<br>
-    [ 0, 0, 1, 0.025],<br>
-    [ 0, 0, 0,     1]])<br>
+            [ 0, 1, 0,     0],<br>
+            [-1, 0, 0,    -1],<br>
+            [ 0, 0, 1, 0.025],<br>
+            [ 0, 0, 0,     1]])<br>
 
     The simulated controlled motion with the following condition is:
 
@@ -75,21 +74,21 @@ For this part, I simulated the the controlled motion with different initial and 
 2. For this part, I used the following initial and final conditions:
 
     Initial robot's configuration:<br>
-    initial_config = np.array([pi/6, -0.5, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0])
+    initial_config = (pi/6, -0.5, 0, 0, 0, 0.2, -1.6, 0, 0, 0, 0, 0, 0)
 
     Initial cube location:<br>
     Tsc_initial =<br>
-    [1, 0, 0,     1],<br>
-    [0, 1, 0,     1],<br>
-    [0, 0, 1, 0.025],<br>
-    [0, 0, 0,     1]])
+            [1, 0, 0,     1],<br>
+            [0, 1, 0,     1],<br>
+            [0, 0, 1, 0.025],<br>
+            [0, 0, 0,     1]])
 
     Final cube location:<br>
     Tsc_initial =<br>
-    [ 0, 1, 0,     1],<br>
-    [-1, 0, 0,    -1],<br>
-    [ 0, 0, 1, 0.025],<br>
-    [ 0, 0, 0,     1]])<br>
+            [ 0, 1, 0,     1],<br>
+            [-1, 0, 0,    -1],<br>
+            [ 0, 0, 1, 0.025],<br>
+            [ 0, 0, 0,     1]])<br>
 
     The simulated controlled motion with the following condition is:
 
